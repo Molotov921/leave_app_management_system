@@ -18,9 +18,9 @@ class AuthController extends GetxController {
     firebaseUser.bindStream(_auth.authStateChanges());
 
     ever(firebaseUser, (User? user) async {
-      if (user != null) {
-        await Future.delayed(const Duration(seconds: 1));
+      await Future.delayed(const Duration(seconds: 3));
 
+      if (user != null) {
         try {
           DocumentSnapshot userDoc =
               await _firestore.collection('users').doc(user.uid).get();

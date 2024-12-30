@@ -68,7 +68,7 @@ class _LoginScreenState extends State<LoginScreen> {
               )
             : null,
         filled: true,
-        fillColor: Colors.white.withOpacity(0.2),
+        fillColor: Colors.white.withValues(alpha: 0.2),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(30),
           borderSide: BorderSide.none,
@@ -137,7 +137,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                             elevation: 10,
                             shadowColor:
-                                const Color(0xFF3C5BCC).withOpacity(0.5),
+                                const Color(0xFF3C5BCC).withValues(alpha: 0.5),
                           ),
                           child: const Text(
                             'Sign In',
