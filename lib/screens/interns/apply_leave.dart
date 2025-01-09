@@ -29,7 +29,9 @@ class _ApplyLeaveState extends State<ApplyLeave> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => FocusScope.of(context).unfocus(),
+      onTap: () {
+        FocusScope.of(context).unfocus();
+      },
       child: Scaffold(
         body: SingleChildScrollView(
           padding: const EdgeInsets.all(20.0),
@@ -37,7 +39,22 @@ class _ApplyLeaveState extends State<ApplyLeave> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(height: 20),
-              _buildHeader(),
+              const Text(
+                "Leave Application Form",
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+              const SizedBox(height: 10),
+              const Text(
+                "Please provide information about your leave.",
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.white70,
+                ),
+              ),
               const SizedBox(height: 20),
               _buildDropdownField(
                 label: "Leave Type",
@@ -60,40 +77,29 @@ class _ApplyLeaveState extends State<ApplyLeave> {
               ),
               const SizedBox(height: 20),
               _buildTextField(
-                label: "Reason",
-                hintText: "Enter reason...",
-                controller: _controller.reasonController,
-              ),
+                  "Reason", "Enter reason...", _controller.reasonController),
               const SizedBox(height: 40),
-              _buildSubmitButton(),
+              Center(
+                child: ElevatedButton(
+                  onPressed: () => _controller.submitLeaveApplication(setState),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF241B61),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 20, vertical: 15),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                  ),
+                  child: const Text(
+                    "Apply Leave",
+                    style: TextStyle(fontSize: 18, color: Colors.white),
+                  ),
+                ),
+              ),
             ],
           ),
         ),
       ),
-    );
-  }
-
-  Widget _buildHeader() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: const [
-        Text(
-          "Leave Application Form",
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
-        ),
-        SizedBox(height: 10),
-        Text(
-          "Please provide information about your leave.",
-          style: TextStyle(
-            fontSize: 16,
-            color: Colors.white70,
-          ),
-        ),
-      ],
     );
   }
 
@@ -121,23 +127,25 @@ class _ApplyLeaveState extends State<ApplyLeave> {
           decoration: _glassDecoration(),
           child: DropdownButtonFormField<String>(
             value: value,
+            hint: Text(
+              hintText,
+              style: const TextStyle(color: Colors.white70),
+            ),
             decoration: InputDecoration(
               hintText: hintText,
-              hintStyle: const TextStyle(color: Colors.white),
+              hintStyle: const TextStyle(color: Colors.white70),
               border: InputBorder.none,
               contentPadding:
                   const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             ),
             items: dropdownItems
-                .map(
-                  (item) => DropdownMenuItem(
-                    value: item,
-                    child: Text(
-                      item,
-                      style: const TextStyle(color: Colors.white),
-                    ),
-                  ),
-                )
+                .map((item) => DropdownMenuItem(
+                      value: item,
+                      child: Text(
+                        item,
+                        style: const TextStyle(color: Colors.white),
+                      ),
+                    ))
                 .toList(),
             onChanged: onChanged,
             dropdownColor: const Color(0xFF241B61),
@@ -167,35 +175,31 @@ class _ApplyLeaveState extends State<ApplyLeave> {
           decoration: _glassDecoration(),
           child: TextFormField(
             controller: TextEditingController(
-              text: _controller.selectedDate != null
-                  ? "${_controller.selectedDate!.day}/${_controller.selectedDate!.month}/${_controller.selectedDate!.year}"
-                  : "",
-            ),
-            decoration: InputDecoration(
-              hintText: "Select leave date...",
-              hintStyle: const TextStyle(color: Colors.white),
-              suffixIcon: const Icon(Icons.calendar_today, color: Colors.white),
-              border: InputBorder.none,
-              contentPadding:
-                  const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            ),
+                text: _controller.selectedDate != null
+                    ? "${_controller.selectedDate!.day}/${_controller.selectedDate!.month}/${_controller.selectedDate!.year}"
+                    : ""),
             readOnly: true,
             onTap: () async {
               await _controller.pickDate(context);
               setState(() {});
             },
             style: const TextStyle(color: Colors.white),
+            decoration: InputDecoration(
+              hintText: "Select leave date...",
+              hintStyle: const TextStyle(color: Colors.white70),
+              suffixIcon: const Icon(Icons.calendar_today, color: Colors.white),
+              border: InputBorder.none,
+              contentPadding:
+                  const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            ),
           ),
         ),
       ],
     );
   }
 
-  Widget _buildTextField({
-    required String label,
-    required String hintText,
-    required TextEditingController controller,
-  }) {
+  Widget _buildTextField(
+      String label, String hintText, TextEditingController controller) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -215,43 +219,18 @@ class _ApplyLeaveState extends State<ApplyLeave> {
             controller: controller,
             focusNode: _reasonFocusNode,
             maxLines: label == "Reason" ? 4 : 1,
-            decoration: _inputDecoration(
-              hintText,
-              hideHint: _reasonFocusNode.hasFocus && controller.text.isEmpty,
+            decoration: InputDecoration(
+              hintText: hintText,
+              hintStyle: const TextStyle(color: Colors.white70),
+              border: InputBorder.none,
+              contentPadding:
+                  const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             ),
             style: const TextStyle(color: Colors.white),
             cursorColor: const Color(0xFF6A0DAD),
           ),
         ),
       ],
-    );
-  }
-
-  Widget _buildSubmitButton() {
-    return Center(
-      child: ElevatedButton(
-        onPressed: () => _controller.submitLeaveApplication(context, setState),
-        style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFF241B61),
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(30),
-          ),
-        ),
-        child: const Text(
-          "Apply Leave",
-          style: TextStyle(fontSize: 18, color: Colors.white),
-        ),
-      ),
-    );
-  }
-
-  InputDecoration _inputDecoration(String hintText, {bool hideHint = false}) {
-    return InputDecoration(
-      hintText: hideHint ? '' : hintText,
-      hintStyle: const TextStyle(color: Colors.white),
-      border: InputBorder.none,
-      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
     );
   }
 

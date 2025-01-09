@@ -1,31 +1,31 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../services/auth_services.dart';
-import 'apply_leave.dart';
-import 'intern_dashboard.dart';
-import 'leave_status.dart';
+import 'admin_dashboard.dart';
+import 'leave_details.dart';
+import 'leave_request.dart';
 
-class InternDashboard extends StatefulWidget {
-  const InternDashboard({super.key});
+class AdminHome extends StatefulWidget {
+  const AdminHome({super.key});
 
   @override
-  State<InternDashboard> createState() => _InternDashboardState();
+  State<AdminHome> createState() => _AdminHomeState();
 }
 
-class _InternDashboardState extends State<InternDashboard> {
+class _AdminHomeState extends State<AdminHome> {
   int _selectedIndex = 0;
   final PageController _pageController = PageController();
 
   final List<Widget> _screens = [
-    const InternDashboardContent(),
-    const ApplyLeave(),
-    const LeaveStatus(),
+    const AdminDashboardContent(),
+    const LeaveRequests(),
+    const LeaveDetails(),
   ];
 
   final List<String> _titles = [
-    "Intern Dashboard",
-    "Apply Leave",
-    "Leave Status",
+    "Admin Dashboard",
+    "Leave Requests",
+    "Leave Details",
   ];
 
   void _onItemTapped(int index) {
@@ -90,7 +90,7 @@ class _InternDashboardState extends State<InternDashboard> {
                 },
                 child: const Text(
                   "Cancel",
-                  style: TextStyle(color: Colors.white), // Light gray/white
+                  style: TextStyle(color: Colors.white70),
                 ),
               ),
               TextButton(
@@ -100,7 +100,7 @@ class _InternDashboardState extends State<InternDashboard> {
                 },
                 child: const Text(
                   "Yes",
-                  style: TextStyle(color: Colors.redAccent), // Red text
+                  style: TextStyle(color: Colors.redAccent),
                 ),
               ),
             ],
@@ -155,9 +155,9 @@ class _InternDashboardState extends State<InternDashboard> {
             borderRadius: BorderRadius.circular(30),
             child: BottomNavigationBar(
               items: [
-                _buildBarItem(Icons.home, 'Home', 0),
-                _buildBarItem(Icons.add, 'Apply Leave', 1),
-                _buildBarItem(Icons.check_circle_outline, 'Leave Status', 2),
+                _buildBarItem(Icons.dashboard, 'Dashboard', 0),
+                _buildBarItem(Icons.request_page, 'Leave Requests', 1),
+                _buildBarItem(Icons.history, 'Leave Details', 2),
               ],
               currentIndex: _selectedIndex,
               onTap: _onItemTapped,

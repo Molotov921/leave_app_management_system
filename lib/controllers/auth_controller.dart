@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
+import '../models/user_model.dart';
 
 class AuthController extends GetxController {
   static AuthController instance = Get.find();
@@ -18,7 +19,8 @@ class AuthController extends GetxController {
     firebaseUser.bindStream(_auth.authStateChanges());
 
     ever(firebaseUser, (User? user) async {
-      await Future.delayed(const Duration(seconds: 3));
+      // Delay to prevent rapid rebuilding
+      await Future.delayed(const Duration(seconds: 1));
 
       if (user != null) {
         try {
@@ -26,13 +28,18 @@ class AuthController extends GetxController {
               await _firestore.collection('users').doc(user.uid).get();
 
           if (userDoc.exists) {
-            userRole.value = userDoc['role'];
+            UserModel userModel = UserModel.fromFirestore(
+                userDoc.data() as Map<String, dynamic>, user.uid);
+            userRole.value = userModel.role;
 
-            // Role-based navigation
             if (userRole.value == 'admin') {
-              Get.offAllNamed('/adminDashboard');
+              if (Get.currentRoute != '/adminDashboard') {
+                Get.offAllNamed('/adminDashboard');
+              }
             } else if (userRole.value == 'intern') {
-              Get.offAllNamed('/internDashboard');
+              if (Get.currentRoute != '/internDashboard') {
+                Get.offAllNamed('/internDashboard');
+              }
             } else {
               Get.offAllNamed('/login');
               Get.snackbar("Error", "Unauthorized role.");
@@ -64,7 +71,9 @@ class AuthController extends GetxController {
           .get();
 
       if (userDoc.exists) {
-        userRole.value = userDoc['role'];
+        UserModel userModel = UserModel.fromFirestore(
+            userDoc.data() as Map<String, dynamic>, userCredential.user!.uid);
+        userRole.value = userModel.role;
         print('User role on login: ${userRole.value}'); // Debugging line
 
         // Role-based navigation

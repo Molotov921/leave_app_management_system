@@ -27,11 +27,11 @@ class _LoginScreenState extends State<LoginScreen> {
       );
 
       if (user != null) {
-        final role = await authService.getUserRole(user.uid);
+        final userRole = await authService.getUserRole(user.uid);
 
-        if (role == 'admin') {
+        if (userRole == 'admin') {
           Get.offNamed('/adminDashboard');
-        } else if (role == 'intern') {
+        } else if (userRole == 'intern') {
           Get.offNamed('/internDashboard');
         } else {
           Get.snackbar("Error", "Invalid user role");

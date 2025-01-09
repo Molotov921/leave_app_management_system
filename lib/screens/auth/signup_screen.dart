@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../services/auth_services.dart';
@@ -29,6 +30,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
       );
 
       if (user != null) {
+        // Storing user data with the role 'intern' in Firestore
+        await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
+          'name': nameController.text.trim(),
+          'email': emailController.text.trim(),
+          'role': 'intern', // Storing the role as 'intern'
+        });
+
         Get.offAllNamed('/login');
       }
     } catch (e) {

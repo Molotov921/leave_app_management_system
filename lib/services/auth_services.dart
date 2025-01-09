@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import '../models/user_model.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -15,12 +16,19 @@ class AuthService {
         email: email,
         password: password,
       );
-      await _firestore.collection('users').doc(userCredential.user?.uid).set({
-        'name': name,
-        'email': email,
-        'role': 'intern',
-        'uid': userCredential.user?.uid,
-      });
+      UserModel userModel = UserModel(
+        name: name,
+        email: email,
+        role: 'intern',
+        uid: userCredential.user?.uid ?? '',
+        approvedLeaves: 0,
+        rejectedLeaves: 0,
+        totalLeaves: 0,
+      );
+      await _firestore
+          .collection('users')
+          .doc(userCredential.user?.uid)
+          .set(userModel.toMap());
       log("Intern registered: ${userCredential.user?.uid}");
       return userCredential.user;
     } catch (e) {
@@ -49,7 +57,9 @@ class AuthService {
     try {
       DocumentSnapshot userDoc =
           await _firestore.collection('users').doc(uid).get();
-      return userDoc['role'] ?? 'unknown';
+      UserModel userModel =
+          UserModel.fromFirestore(userDoc.data() as Map<String, dynamic>, uid);
+      return userModel.role;
     } catch (e) {
       log("Error fetching user role: $e");
       return 'unknown';

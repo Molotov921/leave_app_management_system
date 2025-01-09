@@ -3,8 +3,8 @@ import 'package:get/get.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'controllers/auth_controller.dart';
 import 'firebase_options.dart';
+import 'screens/admin/admin_home.dart';
 import 'screens/auth/login_screen.dart';
-import 'screens/admin/admin_dashboard.dart';
 import 'screens/auth/signup_screen.dart';
 import 'screens/interns/intern_home.dart';
 import 'screens/splash/splash_screen.dart';
@@ -48,7 +48,7 @@ void main() async {
       GetPage(name: '/', page: () => const SplashScreen()),
       GetPage(name: '/login', page: () => const LoginScreen()),
       GetPage(name: '/signup', page: () => const RegisterScreen()),
-      GetPage(name: '/adminDashboard', page: () => const AdminDashboard()),
+      GetPage(name: '/adminDashboard', page: () => const AdminHome()),
       GetPage(name: '/internDashboard', page: () => const InternDashboard()),
     ],
   ));
