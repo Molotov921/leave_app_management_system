@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/leave_model.dart';
 
-class LeaveCardAdmin extends StatelessWidget {
+class LeaveCardAdmin extends StatefulWidget {
   final LeaveModel leaveModel;
   final VoidCallback onApprove;
   final VoidCallback onReject;
@@ -14,19 +14,35 @@ class LeaveCardAdmin extends StatelessWidget {
   });
 
   @override
+  LeaveCardAdminState createState() => LeaveCardAdminState();
+}
+
+class LeaveCardAdminState extends State<LeaveCardAdmin> {
+  bool _isExpanded = false;
+
+  @override
   Widget build(BuildContext context) {
     return Card(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(15),
       ),
-      color: Colors.white.withAlpha(30),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
+      elevation: 5,
+      margin: const EdgeInsets.symmetric(vertical: 10),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            colors: [Color(0xFF241B61), Color(0xFF3C5BCC)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          borderRadius: BorderRadius.circular(15),
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              leaveModel.leaveType,
+              widget.leaveModel.userName ?? '',
               style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -35,7 +51,16 @@ class LeaveCardAdmin extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              '${leaveModel.leaveDate.day}/${leaveModel.leaveDate.month}/${leaveModel.leaveDate.year} (${leaveModel.period})',
+              widget.leaveModel.leaveType,
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              '${widget.leaveModel.leaveDate.day}/${widget.leaveModel.leaveDate.month}/${widget.leaveModel.leaveDate.year} (${widget.leaveModel.period})',
               style: const TextStyle(
                 fontSize: 16,
                 color: Colors.white70,
@@ -43,27 +68,52 @@ class LeaveCardAdmin extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              leaveModel.reason,
+              widget.leaveModel.reason,
               style: const TextStyle(
                 fontSize: 16,
                 color: Colors.white70,
               ),
+              maxLines: _isExpanded ? null : 3,
+              overflow:
+                  _isExpanded ? TextOverflow.visible : TextOverflow.ellipsis,
             ),
+            const SizedBox(height: 8),
+            if (widget.leaveModel.reason.length > 100)
+              Align(
+                alignment: Alignment.centerLeft,
+                child: TextButton(
+                  onPressed: () {
+                    setState(() {
+                      _isExpanded = !_isExpanded;
+                    });
+                  },
+                  child: Text(
+                    _isExpanded ? 'Show Less' : 'Show More',
+                    style: const TextStyle(color: Colors.white70),
+                  ),
+                ),
+              ),
             const SizedBox(height: 16),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 ElevatedButton(
-                  onPressed: onApprove,
+                  onPressed: widget.onApprove,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.green,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(15),
+                    ),
                   ),
                   child: const Text("Approve"),
                 ),
                 ElevatedButton(
-                  onPressed: onReject,
+                  onPressed: widget.onReject,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.red,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(15),
+                    ),
                   ),
                   child: const Text("Reject"),
                 ),

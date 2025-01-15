@@ -105,7 +105,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                   const SizedBox(height: 40),
                   buildTextField(
-                    labelText: 'Name',
+                    labelText: 'Name with Surname',
                     controller: nameController,
                     prefixIcon: Icons.person,
                   ),

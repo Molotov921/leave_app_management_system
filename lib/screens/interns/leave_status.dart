@@ -57,109 +57,122 @@ class LeaveStatus extends StatelessWidget {
                   const SizedBox(height: 10),
                   Column(
                     children: recentLeaves.map((leaveApplication) {
-                      return Slidable(
-                        closeOnScroll: true,
-                        endActionPane: ActionPane(
-                          motion: const DrawerMotion(),
-                          children: [
-                            SlidableAction(
-                              borderRadius: const BorderRadius.horizontal(
-                                left: Radius.circular(25),
-                              ),
-                              onPressed: (ctx) {
-                                showDialog(
-                                  context: context,
-                                  builder: (_) => EditLeavePopup(
-                                    leaveApplication: leaveApplication,
-                                    onSave: (updatedLeave) {
-                                      leaveController
-                                          .updateLeaveApplication(updatedLeave);
-                                    },
-                                  ),
-                                );
-                              },
-                              backgroundColor: const Color(0xFF23195f),
-                              foregroundColor: Colors.white,
-                              icon: Icons.edit,
-                              label: 'Edit',
-                            ),
-                            SlidableAction(
-                              borderRadius: const BorderRadius.horizontal(
-                                right: Radius.circular(25),
-                              ),
-                              onPressed: (ctx) {
-                                Get.dialog(
-                                  AlertDialog(
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(15),
+                      return Container(
+                        margin: const EdgeInsets.only(bottom: 10.0),
+                        child: Slidable(
+                          closeOnScroll: true,
+                          endActionPane: ActionPane(
+                            motion: const DrawerMotion(),
+                            children: [
+                              SlidableAction(
+                                borderRadius: const BorderRadius.horizontal(
+                                  left: Radius.circular(25),
+                                ),
+                                onPressed: (ctx) {
+                                  showDialog(
+                                    context: context,
+                                    builder: (_) => EditLeavePopup(
+                                      leaveApplication: leaveApplication,
+                                      onSave: (updatedLeave) {
+                                        leaveController.updateLeaveApplication(
+                                            updatedLeave);
+                                      },
                                     ),
-                                    backgroundColor: const Color(0xFF241B61),
-                                    contentPadding: const EdgeInsets.symmetric(
-                                        vertical: 20, horizontal: 20),
-                                    title: const Center(
-                                      child: Text(
-                                        "Delete Leave Application",
+                                  );
+                                },
+                                backgroundColor: const Color(0xFF23195f),
+                                foregroundColor: Colors.white,
+                                icon: Icons.edit,
+                                label: 'Edit',
+                              ),
+                              SlidableAction(
+                                borderRadius: const BorderRadius.horizontal(
+                                  right: Radius.circular(25),
+                                ),
+                                onPressed: (ctx) {
+                                  Get.dialog(
+                                    AlertDialog(
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(15),
+                                      ),
+                                      backgroundColor: const Color(0xFF241B61),
+                                      contentPadding:
+                                          const EdgeInsets.symmetric(
+                                              vertical: 20, horizontal: 20),
+                                      title: const Center(
+                                        child: Text(
+                                          "Delete Leave Application",
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 18,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                      ),
+                                      content: const Text(
+                                        "Are you sure you want to delete this leave application? This action cannot be undone.",
                                         style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 18,
-                                          color: Colors.white,
+                                          fontSize: 16,
+                                          color: Colors.white70,
                                         ),
+                                        textAlign: TextAlign.center,
                                       ),
+                                      actionsAlignment:
+                                          MainAxisAlignment.center,
+                                      actions: [
+                                        TextButton(
+                                          onPressed: () {
+                                            Navigator.of(context).pop();
+                                          },
+                                          child: const Text(
+                                            "Cancel",
+                                            style:
+                                                TextStyle(color: Colors.white),
+                                          ),
+                                        ),
+                                        ElevatedButton(
+                                          onPressed: () {
+                                            // Close dialog first, then perform delete operation
+                                            Navigator.of(context).pop();
+                                            leaveController
+                                                .deleteLeaveApplication(
+                                                    leaveApplication.docId)
+                                                .then((value) {
+                                              Get.back();
+                                            });
+                                          },
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor:
+                                                Colors.red.shade400,
+                                          ),
+                                          child: const Text(
+                                            "Delete",
+                                            style:
+                                                TextStyle(color: Colors.white),
+                                          ),
+                                        ),
+                                      ],
                                     ),
-                                    content: const Text(
-                                      "Are you sure you want to delete this leave application? This action cannot be undone.",
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        color: Colors.white70,
-                                      ),
-                                      textAlign: TextAlign.center,
-                                    ),
-                                    actionsAlignment: MainAxisAlignment.center,
-                                    actions: [
-                                      TextButton(
-                                        onPressed: () {
-                                          Navigator.of(context).pop();
-                                        },
-                                        child: const Text(
-                                          "Cancel",
-                                          style: TextStyle(color: Colors.white),
-                                        ),
-                                      ),
-                                      ElevatedButton(
-                                        onPressed: () {
-                                          leaveController
-                                              .deleteLeaveApplication(
-                                                  leaveApplication.docId)
-                                              .then((value) {
-                                            Get.back();
-                                          });
-                                        },
-                                        style: ElevatedButton.styleFrom(
-                                          backgroundColor: Colors.red.shade400,
-                                        ),
-                                        child: const Text(
-                                          "Delete",
-                                          style: TextStyle(color: Colors.white),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                );
-                              },
-                              backgroundColor: Colors.red.shade400,
-                              foregroundColor: Colors.white,
-                              icon: Icons.delete,
-                              label: 'Delete',
+                                  );
+                                },
+                                backgroundColor: Colors.red.shade400,
+                                foregroundColor: Colors.white,
+                                icon: Icons.delete,
+                                label: 'Delete',
+                              ),
+                            ],
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: LeaveCard(
+                              leaveType: leaveApplication.leaveType,
+                              date:
+                                  "${leaveApplication.leaveDate.day}/${leaveApplication.leaveDate.month}/${leaveApplication.leaveDate.year}",
+                              period: leaveApplication.period,
+                              reason: leaveApplication.reason,
+                              status: leaveApplication.status,
                             ),
-                          ],
-                        ),
-                        child: LeaveCard(
-                          leaveType: leaveApplication.leaveType,
-                          date:
-                              "${leaveApplication.leaveDate.day}/${leaveApplication.leaveDate.month}/${leaveApplication.leaveDate.year}",
-                          period: leaveApplication.period,
-                          reason: leaveApplication.reason,
-                          status: leaveApplication.status,
+                          ),
                         ),
                       );
                     }).toList(),
@@ -177,13 +190,19 @@ class LeaveStatus extends StatelessWidget {
                   const SizedBox(height: 10),
                   Column(
                     children: pastLeaves.map((leaveApplication) {
-                      return LeaveCard(
-                        leaveType: leaveApplication.leaveType,
-                        date:
-                            "${leaveApplication.leaveDate.day}/${leaveApplication.leaveDate.month}/${leaveApplication.leaveDate.year}",
-                        period: leaveApplication.period,
-                        reason: leaveApplication.reason,
-                        status: leaveApplication.status,
+                      return Container(
+                        margin: const EdgeInsets.only(bottom: 10.0),
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: LeaveCard(
+                            leaveType: leaveApplication.leaveType,
+                            date:
+                                "${leaveApplication.leaveDate.day}/${leaveApplication.leaveDate.month}/${leaveApplication.leaveDate.year}",
+                            period: leaveApplication.period,
+                            reason: leaveApplication.reason,
+                            status: leaveApplication.status,
+                          ),
+                        ),
                       );
                     }).toList(),
                   ),
@@ -192,7 +211,10 @@ class LeaveStatus extends StatelessWidget {
                   const Center(
                     child: Text(
                       'No leave applications yet',
-                      style: TextStyle(color: Colors.white),
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold),
                     ),
                   ),
               ],

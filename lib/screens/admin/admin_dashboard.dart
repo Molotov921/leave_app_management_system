@@ -17,47 +17,40 @@ class AdminDashboardContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            // Display admin's name
-            FutureBuilder<String>(
-              future: fetchAdminName(),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(
-                    child: Text(
-                      "Welcome,",
-                      style: TextStyle(
-                        fontSize: 25,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
-                  );
-                }
-                if (snapshot.hasError) {
-                  return const Center(
-                    child: Text(
-                      "Welcome, Admin",
-                      style: TextStyle(
-                        fontSize: 25,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
-                  );
-                }
-                return Column(
+    return FutureBuilder<String>(
+      future: fetchAdminName(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+        if (snapshot.hasError) {
+          return const Center(
+            child: Text(
+              "Error fetching admin name",
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
+          );
+        }
+        return SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                // Display admin's name
+                Column(
                   children: [
                     const Center(
                       child: Text(
                         "Welcome,",
                         style: TextStyle(
-                          fontSize: 25,
+                          fontSize: 20,
                           fontWeight: FontWeight.bold,
                           color: Colors.white,
                         ),
@@ -67,54 +60,56 @@ class AdminDashboardContent extends StatelessWidget {
                       child: Text(
                         "${snapshot.data}!",
                         style: const TextStyle(
-                          fontSize: 25,
+                          fontSize: 20,
                           fontWeight: FontWeight.bold,
                           color: Colors.white,
                         ),
                       ),
                     ),
                   ],
-                );
-              },
-            ),
-            const SizedBox(height: 20),
-            const Text(
-              "Leave Reports",
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
-            ),
-            const SizedBox(height: 20),
-            // Display intern leave data
-            StreamBuilder<List<UserModel>>(
-              stream: fetchUsers(),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
-                }
+                ),
+                const SizedBox(height: 20),
+                const Text(
+                  "Leave Reports",
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+                const SizedBox(height: 20),
+                // Display intern leave data
+                StreamBuilder<List<UserModel>>(
+                  stream: fetchUsers(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
 
-                if (snapshot.hasError) {
-                  return const Center(
-                    child: Text(
-                      "Error fetching user data",
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  );
-                }
+                    if (snapshot.hasError) {
+                      return const Center(
+                        child: Text(
+                          "Error fetching user data",
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      );
+                    }
 
-                final users =
-                    snapshot.data?.where((user) => user.role == 'intern') ?? [];
+                    final users =
+                        snapshot.data?.where((user) => user.role == 'intern') ??
+                            [];
 
-                return Column(
-                  children: users.map((user) => _buildUserCard(user)).toList(),
-                );
-              },
+                    return Column(
+                      children:
+                          users.map((user) => _buildUserCard(user)).toList(),
+                    );
+                  },
+                ),
+              ],
             ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 

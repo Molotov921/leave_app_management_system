@@ -89,21 +89,17 @@ class LeaveController extends GetxController {
         .collection('leave_applications')
         .doc(docId)
         .get();
-
     if (leaveDoc.exists) {
       final LeaveModel leaveApplication = LeaveModel.fromDocument(leaveDoc);
       final String uid = leaveApplication.uid;
       final String previousStatus = leaveApplication.status;
-
       await FirebaseFirestore.instance
           .collection('leave_applications')
           .doc(docId)
           .update({'status': newStatus});
-
       final DocumentReference userDocRef =
           FirebaseFirestore.instance.collection('users').doc(uid);
       final batch = FirebaseFirestore.instance.batch();
-
       if (previousStatus == 'Approved') {
         batch.update(userDocRef, {
           'approvedLeaves': FieldValue.increment(-1),
@@ -117,7 +113,6 @@ class LeaveController extends GetxController {
           'pendingLeaves': FieldValue.increment(-1),
         });
       }
-
       if (newStatus == 'Approved') {
         batch.update(userDocRef, {
           'approvedLeaves': FieldValue.increment(1),
@@ -127,7 +122,6 @@ class LeaveController extends GetxController {
           'rejectedLeaves': FieldValue.increment(1),
         });
       }
-
       await batch.commit();
     }
   }
@@ -346,10 +340,48 @@ class LeaveController extends GetxController {
         .where('uid', isEqualTo: currentUid)
         .orderBy('leaveDate', descending: true)
         .snapshots()
-        .map((snapshot) {
-      return snapshot.docs.map((doc) {
-        return LeaveModel.fromDocument(doc);
-      }).toList();
+        .asyncMap((snapshot) async {
+      List<LeaveModel> leaveList = [];
+      for (var doc in snapshot.docs) {
+        LeaveModel leave = LeaveModel.fromDocument(doc);
+        leave.userName = await LeaveModel.fetchUserName(leave.uid);
+        leaveList.add(leave);
+      }
+      return leaveList;
+    });
+  }
+
+  Stream<List<LeaveModel>> fetchPendingLeaveApplicationsOrderedByTimestamp() {
+    return FirebaseFirestore.instance
+        .collection('leave_applications')
+        .where('status', isEqualTo: 'Pending')
+        .orderBy('timestamp', descending: true)
+        .snapshots()
+        .asyncMap((snapshot) async {
+      List<LeaveModel> leaveList = [];
+      for (var doc in snapshot.docs) {
+        LeaveModel leave = LeaveModel.fromDocument(doc);
+        leave.userName = await LeaveModel.fetchUserName(leave.uid);
+        leaveList.add(leave);
+      }
+      return leaveList;
+    });
+  }
+
+  Stream<List<LeaveModel>> fetchProcessedLeaveApplications() {
+    return FirebaseFirestore.instance
+        .collection('leave_applications')
+        .where('status', isNotEqualTo: 'Pending')
+        .orderBy('leaveDate', descending: true)
+        .snapshots()
+        .asyncMap((snapshot) async {
+      List<LeaveModel> leaveList = [];
+      for (var doc in snapshot.docs) {
+        LeaveModel leave = LeaveModel.fromDocument(doc);
+        leave.userName = await LeaveModel.fetchUserName(leave.uid);
+        leaveList.add(leave);
+      }
+      return leaveList;
     });
   }
 

@@ -8,6 +8,7 @@ class LeaveModel {
   final DateTime leaveDate;
   final String reason;
   final String status;
+  String? userName;
 
   LeaveModel({
     required this.docId,
@@ -17,6 +18,7 @@ class LeaveModel {
     required this.leaveDate,
     required this.reason,
     required this.status,
+    this.userName,
   });
 
   // Factory method to create a LeaveModel from Firestore data
@@ -54,6 +56,7 @@ class LeaveModel {
     DateTime? leaveDate,
     String? reason,
     String? status,
+    String? userName,
   }) {
     return LeaveModel(
       docId: docId ?? this.docId,
@@ -63,6 +66,14 @@ class LeaveModel {
       leaveDate: leaveDate ?? this.leaveDate,
       reason: reason ?? this.reason,
       status: status ?? this.status,
+      userName: userName ?? this.userName,
     );
+  }
+
+  // Static method to fetch user name from Firestore
+  static Future<String> fetchUserName(String uid) async {
+    final DocumentSnapshot userDoc =
+        await FirebaseFirestore.instance.collection('users').doc(uid).get();
+    return userDoc['name'];
   }
 }
