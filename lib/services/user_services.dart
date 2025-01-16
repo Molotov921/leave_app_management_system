@@ -27,6 +27,27 @@ class UserService {
     }
   }
 
+  // Fetch user details
+  Future<UserModel> fetchUserDetails() async {
+    final User? user = _auth.currentUser;
+    if (user == null) throw Exception("User not logged in");
+
+    try {
+      final DocumentSnapshot userDoc =
+          await _firestore.collection('users').doc(user.uid).get();
+
+      if (userDoc.exists) {
+        UserModel userModel = UserModel.fromFirestore(
+            userDoc.data() as Map<String, dynamic>, user.uid);
+        return userModel;
+      } else {
+        throw Exception("User data not found");
+      }
+    } catch (e) {
+      throw Exception("Failed to fetch user details: $e");
+    }
+  }
+
   // Fetch all users data excluding admin users for admin dashboard
   Future<List<UserModel>> fetchAllUsers() async {
     try {
