@@ -46,9 +46,22 @@ class LeaveController extends GetxController {
       return;
     }
 
+    DocumentSnapshot userDoc = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(currentUser.uid)
+        .get();
+
+    if (!userDoc.exists) {
+      showSnackBarMessage("User details not found.");
+      return;
+    }
+
+    String userName = userDoc['name'] ?? '';
+
     LeaveModel leaveApplication = LeaveModel(
       docId: '',
       uid: currentUser.uid,
+      userName: userName,
       leaveType: selectedLeaveType!,
       period: selectedPeriod!,
       leaveDate: selectedDate!,
@@ -228,6 +241,19 @@ class LeaveController extends GetxController {
 
   Future<void> updateLeaveApplication(LeaveModel updatedLeave) async {
     try {
+      DocumentSnapshot userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(updatedLeave.uid)
+          .get();
+
+      if (!userDoc.exists) {
+        showSnackBarMessage("User details not found.");
+        return;
+      }
+
+      String userName = userDoc['name'] ?? '';
+      updatedLeave = updatedLeave.copyWith(userName: userName);
+
       // Update the leave application in Firestore
       await FirebaseFirestore.instance
           .collection('leave_applications')

@@ -32,6 +32,7 @@ class LeaveModel {
       leaveDate: (data['leaveDate'] as Timestamp).toDate(),
       reason: data['reason'] ?? '',
       status: data['status'] ?? '',
+      userName: data['userName'],
     );
   }
 
@@ -44,6 +45,7 @@ class LeaveModel {
       'leaveDate': Timestamp.fromDate(leaveDate),
       'reason': reason,
       'status': status,
+      'userName': userName,
     };
   }
 
