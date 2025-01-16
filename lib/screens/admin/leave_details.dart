@@ -12,26 +12,26 @@ class LeaveDetails extends StatelessWidget {
     final LeaveController leaveController = Get.put(LeaveController());
 
     return Scaffold(
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20.0),
-        child: StreamBuilder<List<LeaveModel>>(
-          stream: leaveController.fetchProcessedLeaveApplications(),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
-            }
-            if (snapshot.hasError) {
-              return const Center(
-                child: Text(
-                  "Error fetching leave applications",
-                  style: TextStyle(color: Colors.white),
-                ),
-              );
-            }
+      body: StreamBuilder<List<LeaveModel>>(
+        stream: leaveController.fetchProcessedLeaveApplications(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          if (snapshot.hasError) {
+            return const Center(
+              child: Text(
+                "Error fetching leave applications",
+                style: TextStyle(color: Colors.white),
+              ),
+            );
+          }
 
-            final leaveApplications = snapshot.data ?? [];
+          final leaveApplications = snapshot.data ?? [];
 
-            return Column(
+          return SingleChildScrollView(
+            padding: const EdgeInsets.all(20.0),
+            child: Column(
               children: leaveApplications.isNotEmpty
                   ? leaveApplications.map((leaveApplication) {
                       return Container(
@@ -151,9 +151,9 @@ class LeaveDetails extends StatelessWidget {
                         ),
                       ),
                     ],
-            );
-          },
-        ),
+            ),
+          );
+        },
       ),
     );
   }
